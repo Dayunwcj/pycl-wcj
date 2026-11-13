@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCraftLauncher · 宣传片</title>
+<meta name="description" content="PyCraftLauncher 宣传片。一个轻量的 Minecraft Java 启动器，作者 WCJ。">
+<link rel="icon" href="assets/pycl-logo.png" type="image/png">
+<style>
+  :root {
+    --bg: #07100b;
+    --bg-deep: #040805;
+    --panel: #0b1510;
+    --panel-2: #101d15;
+    --line: #2a3d2c;
+    --line-soft: rgba(126, 168, 116, .18);
+    --grass: #7ddd5b;
+    --grass-2: #5fbf46;
+    --grass-deep: #2e6a29;
+    --bone: #ece6d6;
+    --muted: #93a78f;
+    --shadow: rgba(0, 0, 0, .55);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--bone);
+    background:
+      radial-gradient(1100px 560px at 50% -12%, rgba(92, 178, 76, .15), transparent 62%),
+      radial-gradient(800px 500px at 12% 110%, rgba(49, 100, 55, .12), transparent 60%),
+      linear-gradient(180deg, #08130c 0%, var(--bg) 52%, var(--bg-deep) 100%);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* 像素网格与噪点：只做氛围，不压正文 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(173, 216, 160, .035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(173, 216, 160, .035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at 50% 35%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 0%, transparent 72%);
+  }
+
+  .noise {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .055;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
+  }
+
+  .page {
+    position: relative;
+    z-index: 2;
+    width: min(1180px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 28px 0 36px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ===== 顶栏 ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line-soft);
+    animation: rise .8s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--bone);
+  }
+
+  .brand img {
+    width: 38px;
+    height: 38px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .45));
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    line-height: 1;
+  }
+
+  .brand-name {
+    font-family: "Bahnschrift", "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+
+  .brand-sub {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    color: var(--muted);
+  }
+
+  .top-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--grass);
+    box-shadow: 0 0 0 3px rgba(125, 221, 91, .12), 0 0 18px rgba(125, 221, 91, .8);
+    animation: pulse 2.8s ease-in-out infinite;
+  }
+
+  /* ===== 主舞台 ===== */
+  .stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 42px 0 30px;
+  }
+
+  .stage-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+    animation: rise .85s .08s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 10px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    color: var(--grass);
+    text-transform: uppercase;
+  }
+
+  .kicker::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: var(--grass);
+    box-shadow: 0 0 12px rgba(125, 221, 91, .5);
+  }
+
+  h1 {
+    margin: 0;
+    font-family: "Bahnschrift", "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: clamp(32px, 4.6vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -.02em;
+    color: var(--bone);
+    text-wrap: balance;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--grass);
+  }
+
+  .stage-index {
+    flex: 0 0 auto;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 11px;
+    letter-spacing: .16em;
+    color: var(--muted);
+    padding-bottom: 4px;
+    text-align: right;
+  }
+
+  /* ===== 视频框 ===== */
+  .video-shell {
+    position: relative;
+    padding: 10px;
+    background: linear-gradient(180deg, #101d15, #0a130e);
+    border: 1px solid #344934;
+    box-shadow:
+      0 0 0 1px #020403,
+      0 0 0 5px rgba(125, 221, 91, .04),
+      0 36px 90px rgba(0, 0, 0, .62);
+    animation: rise .95s .16s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  /* 四角草绿定位块，像素语言 */
+  .video-shell::before,
+  .video-shell::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .video-shell::before {
+    top: -2px;
+    left: -2px;
+    border-top: 3px solid var(--grass);
+    border-left: 3px solid var(--grass);
+  }
+
+  .video-shell::after {
+    right: -2px;
+    bottom: -2px;
+    border-right: 3px solid var(--grass);
+    border-bottom: 3px solid var(--grass);
+  }
+
+  .video-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 6px 10px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--muted);
+  }
+
+  .video-bar strong {
+    color: var(--bone);
+    font-weight: 500;
+  }
+
+  .video-frame {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #000;
+  }
+
+  /* 初始播放遮罩；点击后播放并隐藏，不挡后续原生控件 */
+  .play-veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border: 0;
+    background:
+      radial-gradient(ellipse at center, rgba(4, 8, 5, .18), rgba(4, 8, 5, .62)),
+      transparent;
+    color: var(--bone);
+    cursor: pointer;
+    z-index: 2;
+    transition: opacity .25s ease, visibility .25s ease;
+  }
+
+  .play-veil[hidden] { display: none; }
+
+  .play-mark {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    background: var(--grass);
+    border: 2px solid #b6ff95;
+    box-shadow:
+      inset -2px -2px 0 #3c8f31,
+      inset 2px 2px 0 #d4ffbb,
+      0 6px 0 #1d4d1b,
+      0 14px 34px rgba(0, 0, 0, .45);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .play-mark::before {
+    content: "";
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 18px solid #0a160a;
+  }
+
+  .play-veil:hover .play-mark {
+    transform: translateY(-2px);
+    box-shadow:
+      inset -2px -2px 0 #3c8f31,
+      inset 2px 2px 0 #d4ffbb,
+      0 8px 0 #1d4d1b,
+      0 18px 40px rgba(0, 0, 0, .5);
+  }
+
+  .play-label {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    color: var(--bone);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .6);
+  }
+
+  /* ===== 简介 ===== */
+  .about {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    gap: 34px;
+    align-items: start;
+    margin-top: 34px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line-soft);
+    animation: rise .9s .22s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .about-label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 13px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    color: var(--grass);
+    text-transform: uppercase;
+  }
+
+  .about-label::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: var(--grass);
+    box-shadow: 0 0 12px rgba(125, 221, 91, .45);
+  }
+
+  .about-lead {
+    margin: 0 0 12px;
+    font-family: "Bahnschrift", "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.3;
+    letter-spacing: -.01em;
+    color: var(--bone);
+  }
+
+  .about-copy {
+    margin: 0;
+    max-width: 58ch;
+    color: #a9baa4;
+    font-size: 13px;
+    line-height: 1.9;
+    text-wrap: pretty;
+  }
+
+  .about-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line-soft);
+    border: 1px solid var(--line-soft);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .2);
+  }
+
+  .fact {
+    min-height: 94px;
+    padding: 15px 14px 13px;
+    background: linear-gradient(180deg, rgba(17, 31, 22, .92), rgba(9, 17, 12, .92));
+  }
+
+  .fact span {
+    display: block;
+    margin-bottom: 9px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9px;
+    letter-spacing: .16em;
+    color: var(--grass);
+  }
+
+  .fact strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bone);
+  }
+
+  .fact small {
+    display: block;
+    color: #7f947b;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  /* ===== 下载区 ===== */
+  .cta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 34px 0 0;
+    animation: rise .9s .26s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .mc-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 56px;
+    padding: 0 34px;
+    border: 2px solid #245c22;
+    border-radius: 0;
+    background: linear-gradient(180deg, #8ee868 0%, #6ecb50 48%, #56ad3e 100%);
+    color: #071006;
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    cursor: pointer;
+    box-shadow:
+      inset 2px 2px 0 rgba(226, 255, 205, .75),
+      inset -3px -3px 0 rgba(24, 84, 22, .55),
+      0 6px 0 #194618,
+      0 12px 0 rgba(8, 24, 9, .85),
+      0 22px 44px rgba(0, 0, 0, .48);
+    transition: transform .12s ease, filter .18s ease, box-shadow .12s ease;
+  }
+
+  .mc-btn:hover { filter: brightness(1.06); }
+
+  .mc-btn:active {
+    transform: translateY(5px);
+    box-shadow:
+      inset 2px 2px 0 rgba(226, 255, 205, .6),
+      inset -3px -3px 0 rgba(24, 84, 22, .5),
+      0 1px 0 #194618,
+      0 4px 0 rgba(8, 24, 9, .8),
+      0 10px 24px rgba(0, 0, 0, .4);
+  }
+
+  .btn-icon {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    background: rgba(8, 20, 7, .16);
+    border: 1px solid rgba(8, 20, 7, .28);
+    font-family: "Consolas", monospace;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .cta-note {
+    margin: 0;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .compliance {
+    margin: 22px 0 0;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-soft);
+    color: #849780;
+    font-size: 11px;
+    line-height: 1.7;
+    text-align: center;
+    letter-spacing: .02em;
+  }
+
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 22px;
+    margin-top: 26px;
+    border-top: 1px solid var(--line-soft);
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    color: #71836d;
+  }
+
+  .signature { color: var(--bone); }
+
+  /* ===== 提示 / 弹窗 ===== */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 34px;
+    z-index: 8;
+    transform: translate(-50%, 18px);
+    padding: 12px 18px;
+    background: #0d1b12;
+    border: 1px solid #3a5638;
+    color: var(--bone);
+    font-size: 13px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    display: grid;
+    place-items: center;
+    padding: 22px;
+    background: rgba(2, 6, 3, .74);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal[hidden] { display: none; }
+
+  .modal-card {
+    width: min(440px, 100%);
+    padding: 28px 26px 24px;
+    background: linear-gradient(180deg, #111f16, #0a130e);
+    border: 1px solid #3b553a;
+    box-shadow: 0 0 0 1px #020403, 0 30px 80px rgba(0, 0, 0, .65);
+    animation: pop .28s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .modal-kicker {
+    font-family: "Consolas", monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    color: var(--grass);
+  }
+
+  .modal-card h2 {
+    margin: 12px 0 10px;
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 24px;
+    line-height: 1.3;
+    color: var(--bone);
+  }
+
+  .modal-card p {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .modal-card .mc-btn {
+    width: 100%;
+    min-height: 48px;
+    font-size: 15px;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .42; }
+  }
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(12px) scale(.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .page { width: calc(100% - 28px); padding: 20px 0 26px; }
+    .top-meta { display: none; }
+    .brand img { width: 34px; height: 34px; }
+    .brand-name { font-size: 17px; }
+    .stage { padding: 32px 0 22px; }
+    .stage-head { align-items: flex-start; }
+    h1 { font-size: clamp(28px, 9vw, 44px); }
+    .stage-index { display: none; }
+    .video-shell { padding: 7px; }
+    .video-bar { font-size: 9px; letter-spacing: .1em; }
+    .play-mark { width: 52px; height: 52px; }
+    .play-label { display: none; }
+    .about { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
+    .about-facts { grid-template-columns: 1fr 1fr; }
+    .fact { min-height: 86px; padding: 13px 12px; }
+    .cta-wrap { padding-top: 28px; }
+    .mc-btn { width: 100%; min-height: 54px; padding: 0 18px; font-size: 16px; }
+    .compliance { font-size: 10px; }
+    footer { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+
+  @media (max-width: 380px) {
+    h1 { font-size: 30px; }
+    .brand-sub { letter-spacing: .14em; }
+    .about-facts { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body id="top">
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="page">
+    <!-- ===== 顶栏 ===== -->
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="PyCraftLauncher 首页">
+        <img src="assets/pycl-logo.png" alt="PyCraftLauncher 草方块标志" width="38" height="38">
+        <span class="brand-text">
+          <span class="brand-name">PyCraftLauncher</span>
+          <span class="brand-sub">MINECRAFT JAVA LAUNCHER</span>
+        </span>
+      </a>
+      <div class="top-meta">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>OPEN SOURCE / LOCAL FIRST</span>
+      </div>
+    </header>
+
+    <!-- ===== 宣传片主舞台 ===== -->
+    <main class="stage">
+      <div class="stage-head">
+        <div>
+          <p class="kicker">Official Promo · 2026</p>
+          <h1>把启动，<br><em>变成开场。</em></h1>
+        </div>
+        <div class="stage-index">01 / VIDEO<br>49 SEC</div>
+      </div>
+
+      <div class="video-shell">
+        <div class="video-bar">
+          <span><strong>PyCraftLauncher</strong> / 宣传片</span>
+          <span>1280 × 720 · 30 FPS</span>
+        </div>
+        <div class="video-frame">
+          <video id="promo" poster="assets/promo-poster.jpg" preload="metadata" playsinline controls>
+            <source src="assets/promo.mp4" type="video/mp4">
+            你的浏览器不支持 HTML5 视频，请升级浏览器后观看。
+          </video>
+          <button class="play-veil" id="playVeil" type="button" aria-label="播放 PyCraftLauncher 宣传片">
+            <span class="play-mark" aria-hidden="true"></span>
+            <span class="play-label">PLAY PROMO</span>
+          </button>
+        </div>
+      </div>
+
+      <section class="about">
+        <div class="about-main">
+          <p class="about-label">About / 简介</p>
+          <p class="about-lead">一个不绕路的 Minecraft Java 启动器。</p>
+          <p class="about-copy">
+            PyCraftLauncher 用 Python 写成，把正式版与快照安装、Fabric / Forge / NeoForge / Quilt、
+            Modrinth 模组与整合包、多实例和 Java 运行时管理收在同一个窗口里。离线账号只用于本地单人测试；
+            联机、皮肤与官方服务请使用正版账号，本项目不绕过任何官方验证。
+          </p>
+        </div>
+        <div class="about-facts" aria-label="主要能力">
+          <div class="fact">
+            <span>01 / VERSIONS</span>
+            <strong>版本与快照</strong>
+            <small>正式版、快照一键安装，自动补齐资源</small>
+          </div>
+          <div class="fact">
+            <span>02 / LOADERS</span>
+            <strong>四类模组加载器</strong>
+            <small>Fabric / Forge / NeoForge / Quilt</small>
+          </div>
+          <div class="fact">
+            <span>03 / MODRINTH</span>
+            <strong>模组与整合包</strong>
+            <small>在线检索、版本匹配、落盘到实例</small>
+          </div>
+          <div class="fact">
+            <span>04 / INSTANCES</span>
+            <strong>多实例管理</strong>
+            <small>独立 .minecraft、mods、saves 与设置</small>
+          </div>
+        </div>
+      </section>
+
+      <div class="cta-wrap">
+        <button class="mc-btn" id="downloadBtn" type="button">
+          <span class="btn-icon" aria-hidden="true">Q</span>
+          下载请加 QQ 群
+        </button>
+        <p class="cta-note" id="ctaNote">点击按钮加入 QQ 群 · PyCraftLauncher</p>
+      </div>
+
+      <p class="compliance">
+        离线模式仅用于本地单人测试；联机、皮肤与官方服务需拥有正版账号。<br>
+        本项目不包含任何绕过官方验证的实现 · 非 Mojang 官方产品
+      </p>
+    </main>
+
+    <footer>
+      <span><span class="signature">PyCraftLauncher</span> · BY WCJ</span>
+      <span>NOT AFFILIATED WITH MOJANG</span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="qqModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="qqTitle">
+      <span class="modal-kicker">DOWNLOAD CHANNEL</span>
+      <h2 id="qqTitle">QQ 群即将公布</h2>
+      <p>群号正在配置中。等群建好后，这个按钮会直接跳到 QQ 群；现在刷新页面还不会跳转。</p>
+      <button class="mc-btn" id="closeModal" type="button">知道了</button>
+    </div>
+  </div>
+
+<script>
+  /*
+   * ===== 唯一需要改的地方 =====
+   * 用户发来 QQ 群链接后，把完整链接填进下面这行，例如：
+   * const QQ_GROUP_URL = "https://qm.qq.com/q/xxxxxxxx";
+   * 留空时，按钮会弹出“群号即将公布”的提示，不会跳到坏链接。
+   */
+  const QQ_GROUP_URL = "https://qm.qq.com/q/ZPExmpvFMA";
+  let activeGroupUrl = QQ_GROUP_URL;
+
+  const video = document.getElementById("promo");
+  const playVeil = document.getElementById("playVeil");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const ctaNote = document.getElementById("ctaNote");
+  const qqModal = document.getElementById("qqModal");
+  const closeModal = document.getElementById("closeModal");
+  const toast = document.getElementById("toast");
+  let toastTimer = 0;
+
+  function showToast(text) {
+    toast.textContent = text;
+    toast.classList.add("show");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+
+  playVeil.addEventListener("click", () => {
+    playVeil.hidden = true;
+    const result = video.play();
+    if (result && typeof result.catch === "function") {
+      result.catch(() => {
+        playVeil.hidden = false;
+        showToast("浏览器阻止了播放，请点视频下方的播放键");
+      });
+    }
+  });
+
+  video.addEventListener("ended", () => {
+    playVeil.hidden = false;
+    playVeil.querySelector(".play-label").textContent = "REPLAY PROMO";
+  });
+
+  downloadBtn.addEventListener("click", () => {
+    if (activeGroupUrl) {
+      window.location.href = activeGroupUrl;
+      return;
+    }
+    qqModal.hidden = false;
+    closeModal.focus();
+  });
+
+  closeModal.addEventListener("click", () => {
+    qqModal.hidden = true;
+    downloadBtn.focus();
+  });
+
+  qqModal.addEventListener("click", (event) => {
+    if (event.target === qqModal) qqModal.hidden = true;
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !qqModal.hidden) {
+      qqModal.hidden = true;
+      downloadBtn.focus();
+    }
+  });
+
+  // 如果地址栏带 ?qq= 参数，可临时覆盖配置，方便预览不同群链接。
+  const params = new URLSearchParams(window.location.search);
+  const qqOverride = params.get("qq");
+  if (qqOverride) {
+    activeGroupUrl = qqOverride;
+    ctaNote.textContent = "点击后跳转至 QQ 群";
+  }
+</script>
+</body>
+</html>
